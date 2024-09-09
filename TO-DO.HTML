@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Must Bring Items for Trip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-lg p-8 rounded-lg w-96 max-h-screen overflow-auto">
+    <h1 class="text-2xl font-bold mb-4">Must Bring Items for Trip</h1>
+    
+    <!-- Input to Add Custom Item -->
+    <input
+      id="taskInput"
+      type="text"
+      placeholder="Add an item"
+      class="border w-full p-2 rounded mb-4"
+    />
+    <button
+      onclick="addTask()"
+      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+    >
+      Add Item
+    </button>
+
+    <div id="taskList" class="mt-4"></div>
+  </div>
+
+  <script>
+    let tasks = {
+      "Documents": [
+        "Passport, visa",
+        "Tickets for airline, boat, train, bus",
+        "Copies of passport, tickets etc",
+        "Boarding pass",
+        "Drivers licence",
+        "Health insurance card",
+        "List of medications, letter prescriber",
+        "Travel insurance",
+        "Student card"
+      ],
+      "Travel Aids": [
+        "Suitcases, backpack",
+        "Itinerary",
+        "Maps and directions",
+        "Language guide",
+        "Travel guide",
+        "Travel pillow, sleeping mask, earplugs",
+        "Travel locks",
+        "Luggage tags",
+        "Pens and paper",
+        "Snacks, drinks",
+        "Small pocket knife (not in carry-on!)",
+        "Rope, expandable clothesline"
+      ],
+      "Financial": [
+        "Foreign currency",
+        "Emergency money",
+        "Credit card, debit card",
+        "Extra wallet",
+        "Money belt"
+      ],
+      "Appliances": [
+        "Cellphone, charger",
+        "Photo camera, memory card, charger",
+        "Laptop, iPad or Tablet, E-reader, chargers",
+        "Travel adapter and converter",
+        "Travel iron",
+        "Flashlight",
+        "Headphones"
+      ],
+      "Clothes": [
+        "Underwear",
+        "Socks",
+        "Sleepwear",
+        "Shirts, polos",
+        "Jeans, trousers, shorts",
+        "Dresses, skirts",
+        "Shoes, sneakers",
+        "Flipflops, slippers",
+        "Jackets, coats, raincoats",
+        "Belts, ties",
+        "Scarves, hats, gloves"
+      ],
+      "Toiletries": [
+        "Toothbrush, paste, dental floss",
+        "Deodorant",
+        "Tweezers (not in carry-on!)",
+        "Soap, shampoo, conditioner",
+        "Towels",
+        "Nailcare",
+        "Tissues, toilet roll",
+        "Feminine hygiene",
+        "Makeup, makeup remover",
+        "Shaving supplies",
+        "Skin products",
+        "Brush, comb, hair products",
+        "Glasses, contact lenses, supplies"
+      ],
+      "Health": [
+        "Medications, pain reliever",
+        "First aid kit",
+        "Insect repellent",
+        "Oral Rehydration Solution (ORS)",
+        "Mosquito net",
+        "Birth control, condoms",
+        "Vaccines, health/dental checkup",
+        "Vitamins",
+        "Hand sanitizer/disinfectant"
+      ],
+      "General Activities": [
+        "Swimsuit and big towel",
+        "Walking shoes",
+        "Sunglasses",
+        "Sunscreen",
+        "Umbrella",
+        "Daypack",
+        "Books, e-books, magazines"
+      ]
+    };
+
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const task = taskInput.value;
+      if (task.trim()) {
+        if (!tasks["Custom Items"]) {
+          tasks["Custom Items"] = [];
+        }
+        tasks["Custom Items"].push(task);
+        renderTasks();
+        taskInput.value = '';
+      }
+    }
+
+    function deleteTask(category, index) {
+      tasks[category].splice(index, 1);
+      renderTasks();
+    }
+
+    function toggleCategory(category) {
+      const itemsList = document.getElementById(`items-${category}`);
+      itemsList.classList.toggle('hidden');
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = '';
+      Object.keys(tasks).forEach(category => {
+        taskList.innerHTML += `
+          <div class="mb-4">
+            <button onclick="toggleCategory('${category}')" class="w-full bg-gray-200 p-2 rounded text-left">
+              ${category}
+            </button>
+            <ul id="items-${category}" class="mt-2 hidden list-disc list-inside">
+              ${tasks[category].map((task, index) => `
+                <li class="flex justify-between">
+                  <span>${task}</span>
+                  <button onclick="deleteTask('${category}', ${index})" class="text-red-500">Delete</button>
+                </li>`).join('')}
+            </ul>
+          </div>
+        `;
+      });
+    }
+
+    // Initial rendering of tasks
+    renderTasks();
+  </script>
+</body>
+</html>
