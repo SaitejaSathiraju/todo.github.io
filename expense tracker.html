@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip Planner & Expense Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init('YOUR_EMAILJS_PUBLIC_KEY'); // Initialize EmailJS
+    })();
+  </script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="container mx-auto max-w-4xl bg-white shadow-md rounded-lg p-8">
+    <h1 class="text-3xl font-bold text-black mb-6 text-center">Trip Planner & Expense Tracker</h1>
+
+    <!-- Must Bring Items List -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold text-yellow-500 mb-4">Must-Bring Items</h2>
+      <div class="bg-black text-white p-4 rounded-lg mb-6">
+        <details class="mb-4">
+          <summary class="font-bold">Documents</summary>
+          <ul class="list-disc list-inside">
+            <li>Passport, visa</li>
+            <li>Tickets for airline, boat, train, bus</li>
+            <li>Copies of passport, tickets, etc.</li>
+            <li>Boarding pass</li>
+            <li>Driver's license</li>
+            <li>Health insurance card</li>
+            <li>Travel insurance</li>
+          </ul>
+        </details>
+        <details class="mb-4">
+          <summary class="font-bold">Travel Aids</summary>
+          <ul class="list-disc list-inside">
+            <li>Suitcase, backpack</li>
+            <li>Itinerary, maps, language guide</li>
+            <li>Travel pillow, locks, tags</li>
+            <li>Snacks, drinks, pens, paper</li>
+          </ul>
+        </details>
+        <details class="mb-4">
+          <summary class="font-bold">Financial</summary>
+          <ul class="list-disc list-inside">
+            <li>Foreign currency</li>
+            <li>Emergency money</li>
+            <li>Credit/debit card</li>
+            <li>Money belt</li>
+          </ul>
+        </details>
+        <!-- Add other categories as needed -->
+      </div>
+    </div>
+
+    <!-- Expense Tracker -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold text-yellow-500 mb-4">Expense Tracker</h2>
+      <div class="bg-gray-100 p-4 rounded-lg shadow-lg mb-6">
+        <input
+          id="expenseName"
+          type="text"
+          placeholder="Expense Name"
+          class="border w-full p-2 rounded mb-2"
+        />
+        <input
+          id="expenseAmount"
+          type="number"
+          placeholder="Amount"
+          class="border w-full p-2 rounded mb-2"
+        />
+        <input
+          id="expenseDescription"
+          type="text"
+          placeholder="Description"
+          class="border w-full p-2 rounded mb-2"
+        />
+        <button
+          onclick="addExpense()"
+          class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 w-full"
+        >
+          Add Expense
+        </button>
+      </div>
+      
+      <!-- Expense List -->
+      <ul id="expenseList" class="mb-4 list-none bg-black text-white p-4 rounded-lg"></ul>
+
+      <!-- Total Expense -->
+      <div class="text-lg font-semibold text-black mb-6">
+        Total Expense: <span id="totalExpense" class="text-yellow-500">$0</span>
+      </div>
+    </div>
+
+    <!-- Invite Friends Section -->
+    <div>
+      <h2 class="text-2xl font-semibold text-yellow-500 mb-4">Invite Friends to Collaborate</h2>
+      <input
+        id="friendEmail"
+        type="email"
+        placeholder="Enter friend's email"
+        class="border w-full p-2 rounded mb-4"
+      />
+      <button
+        onclick="sendInvite()"
+        class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 w-full"
+      >
+        Send Invite
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let expenses = [];
+
+    // Function to add a new expense
+    function addExpense() {
+      const name = document.getElementById('expenseName').value;
+      const amount = parseFloat(document.getElementById('expenseAmount').value);
+      const description = document.getElementById('expenseDescription').value;
+
+      if (name.trim() && amount && description.trim()) {
+        expenses.push({ name, amount, description });
+        renderExpenses();
+        clearForm();
+      } else {
+        alert('Please fill out all fields');
+      }
+    }
+
+    // Function to delete an expense
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      renderExpenses();
+    }
+
+    // Function to render the list of expenses
+    function renderExpenses() {
+      const expenseList = document.getElementById('expenseList');
+      expenseList.innerHTML = '';
+
+      let total = 0;
+
+      expenses.forEach((expense, index) => {
+        total += expense.amount;
+        expenseList.innerHTML += `
+          <li class="flex justify-between py-2 border-b border-gray-700">
+            <div>
+              <span class="font-bold">${expense.name}</span> - $${expense.amount.toFixed(2)}<br>
+              <span class="text-gray-400">${expense.description}</span>
+            </div>
+            <button onclick="deleteExpense(${index})" class="text-red-500">Delete</button>
+          </li>
+        `;
+      });
+
+      document.getElementById('totalExpense').innerText = `$${total.toFixed(2)}`;
+    }
+
+    // Clear the form after adding an expense
+    function clearForm() {
+      document.getElementById('expenseName').value = '';
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('expenseDescription').value = '';
+    }
+
+    // Function to send invite via email using EmailJS
+    function sendInvite() {
+      const email = document.getElementById('friendEmail').value;
+      if (email.trim()) {
+        const templateParams = {
+          to_email: email,
+          subject: 'Join Trip Expense Tracker!',
+          message: 'Join me in managing our trip expenses! You can add, delete, or view all expenses here.'
+        };
+
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+          .then(function(response) {
+            alert('Invite sent successfully!');
+          }, function(error) {
+            alert('Failed to send invite: ' + error);
+          });
+
+        document.getElementById('friendEmail').value = '';
+      } else {
+        alert('Please enter a valid email');
+      }
+    }
+  </script>
+</body>
+</html>
