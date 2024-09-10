@@ -26,6 +26,8 @@
     <div class="mb-8">
       <h2 class="text-2xl font-semibold text-yellow-500 mb-4">Must-Bring Items</h2>
       <div class="bg-black text-white p-4 rounded-lg mb-6">
+
+        <!-- Documents -->
         <details class="mb-4">
           <summary class="font-bold">Documents</summary>
           <ul class="list-disc list-inside">
@@ -38,15 +40,21 @@
             <li>Travel insurance</li>
           </ul>
         </details>
+
+        <!-- Travel Aids -->
         <details class="mb-4">
           <summary class="font-bold">Travel Aids</summary>
           <ul class="list-disc list-inside">
             <li>Suitcase, backpack</li>
-            <li>Itinerary, maps, language guide</li>
+            <li>Itinerary</li>
+            <li>Maps and directions</li>
+            <li>Language guide</li>
             <li>Travel pillow, locks, tags</li>
             <li>Snacks, drinks, pens, paper</li>
           </ul>
         </details>
+
+        <!-- Financial -->
         <details class="mb-4">
           <summary class="font-bold">Financial</summary>
           <ul class="list-disc list-inside">
@@ -56,7 +64,85 @@
             <li>Money belt</li>
           </ul>
         </details>
-        <!-- Add other categories as needed -->
+
+        <!-- Appliances -->
+        <details class="mb-4">
+          <summary class="font-bold">Appliances</summary>
+          <ul class="list-disc list-inside">
+            <li>Cellphone, charger</li>
+            <li>Photo camera, memory card, charger</li>
+            <li>Laptop, iPad, tablet, chargers</li>
+            <li>Travel adapter and converter</li>
+            <li>Flashlight, headphones</li>
+          </ul>
+        </details>
+
+        <!-- Clothes -->
+        <details class="mb-4">
+          <summary class="font-bold">Clothes</summary>
+          <ul class="list-disc list-inside">
+            <li>Underwear, socks</li>
+            <li>Sleepwear, shirts, polos</li>
+            <li>Jeans, trousers, shorts</li>
+            <li>Jackets, coats, raincoats</li>
+            <li>Shoes, sneakers, flipflops, slippers</li>
+          </ul>
+        </details>
+
+        <!-- Toiletries -->
+        <details class="mb-4">
+          <summary class="font-bold">Toiletries</summary>
+          <ul class="list-disc list-inside">
+            <li>Toothbrush, paste, dental floss</li>
+            <li>Deodorant, soap, shampoo, conditioner</li>
+            <li>Towels, tissues, toilet roll</li>
+            <li>Makeup, remover, shaving supplies</li>
+            <li>Skin products, glasses, contact lenses</li>
+          </ul>
+        </details>
+
+        <!-- Health -->
+        <details class="mb-4">
+          <summary class="font-bold">Health</summary>
+          <ul class="list-disc list-inside">
+            <li>Medications, pain reliever</li>
+            <li>First aid kit, insect repellent</li>
+            <li>Birth control, condoms</li>
+            <li>Vaccines, health checkups</li>
+            <li>Vitamins, hand sanitizer</li>
+          </ul>
+        </details>
+
+        <!-- General Activities -->
+        <details class="mb-4">
+          <summary class="font-bold">General Activities</summary>
+          <ul class="list-disc list-inside">
+            <li>Swimsuit, big towel</li>
+            <li>Walking shoes, sunglasses</li>
+            <li>Sunscreen, umbrella, daypack</li>
+            <li>Books, magazines</li>
+          </ul>
+        </details>
+
+        <!-- Custom Item Section -->
+        <details class="mb-4">
+          <summary class="font-bold ">Custom Items</summary>
+          <div class="mb-4">
+            <input
+              id="customItemInput"
+              type="text"
+              placeholder="Add a custom item"
+              class="border w-full p-2 rounded mb-2 text-black"
+            />
+            <button
+              onclick="addCustomItem()"
+              class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 w-full"
+            >
+              Add Custom Item
+            </button>
+          </div>
+          <ul id="customItemList" class="list-disc list-inside text-black"></ul>
+        </details>
       </div>
     </div>
 
@@ -118,21 +204,69 @@
   </div>
 
   <script>
+    let customItems = [];
     let expenses = [];
+
+    // Function to add a custom item
+    function addCustomItem() {
+      const customItem = document.getElementById('customItemInput').value;
+      if (customItem.trim()) {
+        customItems.push(customItem);
+        renderCustomItems();
+        document.getElementById('customItemInput').value = '';
+      }
+    }
+
+    // Function to render custom items
+    function renderCustomItems() {
+      const customItemList = document.getElementById('customItemList');
+      customItemList.innerHTML = '';
+      customItems.forEach((item, index) => {
+        customItemList.innerHTML += `
+          <li class="flex justify-between">
+            <span>${item}</span>
+            <button onclick="deleteCustomItem(${index})" class="text-red-500">Delete</button>
+          </li>
+        `;
+      });
+    }
+
+    // Function to delete a custom item
+    function deleteCustomItem(index) {
+      customItems.splice(index, 1);
+      renderCustomItems();
+    }
 
     // Function to add a new expense
     function addExpense() {
-      const name = document.getElementById('expenseName').value;
-      const amount = parseFloat(document.getElementById('expenseAmount').value);
-      const description = document.getElementById('expenseDescription').value;
-
-      if (name.trim() && amount && description.trim()) {
-        expenses.push({ name, amount, description });
+      const expenseName = document.getElementById('expenseName').value;
+      const expenseAmount = parseFloat(document.getElementById('expenseAmount').value);
+      const expenseDescription = document.getElementById('expenseDescription').value;
+      
+      if (expenseName && expenseAmount && expenseDescription) {
+        expenses.push({ name: expenseName, amount: expenseAmount, description: expenseDescription });
+        document.getElementById('expenseName').value = '';
+        document.getElementById('expenseAmount').value = '';
+        document.getElementById('expenseDescription').value = '';
         renderExpenses();
-        clearForm();
-      } else {
-        alert('Please fill out all fields');
       }
+    }
+
+    // Function to render expenses
+    function renderExpenses() {
+      const expenseList = document.getElementById('expenseList');
+      expenseList.innerHTML = '';
+      let totalExpense = 0;
+      expenses.forEach((expense, index) => {
+        totalExpense += expense.amount;
+        expenseList.innerHTML += `
+          <li class="flex justify-between">
+            <span>${expense.name}: $${expense.amount}</span>
+            <button onclick="deleteExpense(${index})" class="text-red-500">Delete</button>
+          </li>
+        `;
+      });
+      document.getElementById('totalExpense').innerText = `$${totalExpense.toFixed(2)}`;
     }
 
     // Function to delete an expense
@@ -141,56 +275,21 @@
       renderExpenses();
     }
 
-    // Function to render the list of expenses
-    function renderExpenses() {
-      const expenseList = document.getElementById('expenseList');
-      expenseList.innerHTML = '';
-
-      let total = 0;
-
-      expenses.forEach((expense, index) => {
-        total += expense.amount;
-        expenseList.innerHTML += `
-          <li class="flex justify-between py-2 border-b border-gray-700">
-            <div>
-              <span class="font-bold">${expense.name}</span> - $${expense.amount.toFixed(2)}<br>
-              <span class="text-gray-400">${expense.description}</span>
-            </div>
-            <button onclick="deleteExpense(${index})" class="text-red-500">Delete</button>
-          </li>
-        `;
-      });
-
-      document.getElementById('totalExpense').innerText = `$${total.toFixed(2)}`;
-    }
-
-    // Clear the form after adding an expense
-    function clearForm() {
-      document.getElementById('expenseName').value = '';
-      document.getElementById('expenseAmount').value = '';
-      document.getElementById('expenseDescription').value = '';
-    }
-
-    // Function to send invite via email using EmailJS
+    // Function to send invite via EmailJS
     function sendInvite() {
       const email = document.getElementById('friendEmail').value;
-      if (email.trim()) {
+      if (email) {
         const templateParams = {
           to_email: email,
-          subject: 'Join Trip Expense Tracker!',
-          message: 'Join me in managing our trip expenses! You can add, delete, or view all expenses here.'
         };
-
-        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-          .then(function(response) {
-            alert('Invite sent successfully!');
-          }, function(error) {
-            alert('Failed to send invite: ' + error);
-          });
-
-        document.getElementById('friendEmail').value = '';
-      } else {
-        alert('Please enter a valid email');
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams).then(
+          function(response) {
+            alert('Invite sent!');
+          },
+          function(error) {
+            alert('Failed to send invite. Please try again.');
+          }
+        );
       }
     }
   </script>
